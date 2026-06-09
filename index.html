@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тест по физике — Работа и Мощность</title>
+<style>
+  :root {
+    --blue: #378ADD;
+    --blue-light: #E6F1FB;
+    --blue-dark: #0C447C;
+    --green: #639922;
+    --green-light: #EAF3DE;
+    --red: #E24B4A;
+    --red-light: #FCEBEB;
+    --gray: #5F5E5A;
+    --gray-light: #F1EFE8;
+    --text: #2C2C2A;
+    --text-muted: #888780;
+    --border: rgba(0,0,0,0.12);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f5f4ef;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+  }
+  .container { width: 100%; max-width: 720px; }
+ 
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .header .badge {
+    display: inline-block;
+    background: var(--blue-light);
+    color: var(--blue-dark);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+  }
+  .header h1 {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .header p {
+    color: var(--text-muted);
+    font-size: 15px;
+  }
+ 
+  /* Card */
+  .card {
+    background: #fff;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+  }
+ 
+  /* Form */
+  .form-group { margin-bottom: 1.25rem; }
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .form-group input, .form-group select {
+    width: 100%;
+    height: 44px;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0 14px;
+    font-size: 15px;
+    color: var(--text);
+    background: #fff;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(55,138,221,0.12);
+  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+ 
+  /* Button */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 24px;
+    height: 46px;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+  }
+  .btn-primary {
+    background: var(--blue);
+    color: #fff;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  .btn-primary:hover { background: var(--blue-dark); }
+  .btn-primary:active { transform: scale(0.98); }
+ 
+  /* Progress */
+  .progress-bar-wrap {
+    background: var(--gray-light);
+    border-radius: 99px;
+    height: 6px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--blue);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+ 
+  /* Question */
+  .question-num {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--blue);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 8px;
+  }
+  .question-text {
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+  }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 16px;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #fff;
+  }
+  .option:hover { border-color: var(--blue); background: var(--blue-light); }
+  .option.selected { border-color: var(--blue); background: var(--blue-light); }
+  .option.correct { border-color: var(--green); background: var(--green-light); }
+  .option.wrong { border-color: var(--red); background: var(--red-light); }
+  .option input[type="radio"] { display: none; }
+  .option-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+  .option.selected .option-dot, .option.correct .option-dot {
+    border-color: var(--blue);
+    background: var(--blue);
+  }
+  .option.correct .option-dot { border-color: var(--green); background: var(--green); }
+  .option.wrong .option-dot { border-color: var(--red); background: var(--red); }
+  .option-dot-inner {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #fff;
+    display: none;
+  }
+  .option.selected .option-dot-inner,
+  .option.correct .option-dot-inner,
+  .option.wrong .option-dot-inner { display: block; }
+  .option-label { font-size: 15px; color: var(--text); }
+ 
+  .nav-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    gap: 10px;
+  }
+  .btn-next {
+    background: var(--blue);
+    color: #fff;
+    padding: 0 28px;
+    height: 42px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+  }
+  .btn-next:hover { background: var(--blue-dark); }
+  .btn-next:disabled { background: #ccc; cursor: not-allowed; }
+ 
+  /* Timer */
+  .timer {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+    background: var(--gray-light);
+    padding: 4px 12px;
+    border-radius: 99px;
+  }
+  .timer.warning { color: var(--red); background: var(--red-light); }
+ 
+  /* Results */
+  .result-hero {
+    text-align: center;
+    padding: 1rem 0 1.5rem;
+  }
+  .score-circle {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: var(--blue-light);
+    border: 3px solid var(--blue);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+  }
+  .score-circle .score-num {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--blue-dark);
+    line-height: 1;
+  }
+  .score-circle .score-sub {
+    font-size: 11px;
+    color: var(--blue);
+    margin-top: 2px;
+  }
+  .result-hero h2 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+  .result-hero p { color: var(--text-muted); font-size: 14px; }
+ 
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 1.25rem 0;
+  }
+  .stat-card {
+    background: var(--gray-light);
+    border-radius: var(--radius-sm);
+    padding: 14px 12px;
+    text-align: center;
+  }
+  .stat-card .stat-val { font-size: 22px; font-weight: 600; color: var(--text); }
+  .stat-card .stat-lbl { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .stat-card.good .stat-val { color: var(--green); }
+  .stat-card.bad .stat-val { color: var(--red); }
+ 
+  /* Review */
+  .review-item {
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .review-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    background: #fafaf8;
+  }
+  .review-badge {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+  .review-badge.ok { background: var(--green-light); color: var(--green); }
+  .review-badge.err { background: var(--red-light); color: var(--red); }
+  .review-q { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.4; }
+  .review-body { padding: 8px 14px 12px; font-size: 13px; color: var(--text-muted); }
+  .review-answer { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+  .review-answer .lbl { font-weight: 500; color: var(--gray); }
+  .review-answer .val-ok { color: var(--green); }
+  .review-answer .val-err { color: var(--red); }
+ 
+  .sending-msg { text-align: center; color: var(--text-muted); font-size: 14px; padding: 8px 0; }
+  .hidden { display: none !important; }
+ 
+  @media (max-width: 500px) {
+    .form-row { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .card { padding: 1.25rem; }
+  }
+</style>
+</head>
+<body>
+ 
+<div class="container">
+  <div class="header">
+    <div class="badge">Физика · 7–9 класс</div>
+    <h1>Работа и Мощность</h1>
+    <p>Проверочный тест по теме механической работы и мощности</p>
+  </div>
+ 
+  <!-- LOGIN SCREEN -->
+  <div id="screen-login" class="card">
+    <div class="form-group">
+      <label>Фамилия Имя Отчество</label>
+      <input type="text" id="inp-name" placeholder="Иванов Иван Иванович" autocomplete="name">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Класс</label>
+        <select id="inp-class">
+          <option value="">Выберите класс</option>
+          <option>7А</option><option>7Б</option><option>7В</option>
+          <option>8А</option><option>8Б</option><option>8В</option>
+          <option>9А</option><option>9Б</option><option>9В</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Вариант</label>
+        <select id="inp-variant">
+          <option value="">Выберите</option>
+          <option value="1">Вариант 1</option>
+          <option value="2">Вариант 2</option>
+        </select>
+      </div>
+    </div>
+    <div id="login-error" style="color:var(--red);font-size:13px;margin-bottom:10px;display:none;">Пожалуйста, заполните все поля.</div>
+    <button class="btn btn-primary" onclick="startTest()">Начать тест →</button>
+  </div>
+ 
+  <!-- TEST SCREEN -->
+  <div id="screen-test" class="hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <div class="progress-info" style="margin:0;">
+        <span id="q-counter" style="font-size:14px;color:var(--text-muted);">Вопрос 1 из 20</span>
+      </div>
+      <div class="timer" id="timer-display">⏱ 00:00</div>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-fill" style="width:5%"></div>
+    </div>
+    <div class="card" id="question-card">
+      <div class="question-num" id="q-num">Вопрос 1</div>
+      <div class="question-text" id="q-text"></div>
+      <div class="options" id="q-options"></div>
+      <div class="nav-buttons">
+        <button class="btn-next" id="btn-next" onclick="nextQuestion()" disabled>Далее →</button>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- RESULT SCREEN -->
+  <div id="screen-result" class="hidden">
+    <div class="card">
+      <div class="result-hero">
+        <div class="score-circle">
+          <span class="score-num" id="res-percent">0%</span>
+          <span class="score-sub">выполнено</span>
+        </div>
+        <h2 id="res-title">Результаты теста</h2>
+        <p id="res-name-class"></p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card good">
+          <div class="stat-val" id="res-correct">0</div>
+          <div class="stat-lbl">Верных ответов</div>
+        </div>
+        <div class="stat-card bad">
+          <div class="stat-val" id="res-wrong">0</div>
+          <div class="stat-lbl">Ошибок</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="res-time">—</div>
+          <div class="stat-lbl">Время</div>
+        </div>
+      </div>
+      <div class="sending-msg" id="send-status">📤 Отправка результатов...</div>
+    </div>
+ 
+    <div class="card">
+      <div style="font-size:15px;font-weight:500;margin-bottom:14px;">Разбор ответов</div>
+      <div id="review-list"></div>
+    </div>
+  </div>
+</div>
+ 
+<script>
+const QUESTIONS = {
+  1: [
+    {
+      q: "Какая формула определяет механическую работу?",
+      opts: ["A = F · t", "A = F · s · cos(α)", "A = m · g · h / t", "A = P · t²"],
+      ans: 1
+    },
+    {
+      q: "Единица измерения механической работы в системе СИ:",
+      opts: ["Ватт (Вт)", "Ньютон (Н)", "Джоуль (Дж)", "Паскаль (Па)"],
+      ans: 2
+    },
+    {
+      q: "Тело массой 2 кг подняли на высоту 5 м. Какую работу совершила сила тяжести (g = 10 м/с²)?",
+      opts: ["-100 Дж", "+100 Дж", "50 Дж", "0 Дж"],
+      ans: 0
+    },
+    {
+      q: "Мощность — это:",
+      opts: [
+        "Произведение силы на перемещение",
+        "Работа, совершённая за единицу времени",
+        "Отношение перемещения ко времени",
+        "Произведение массы на ускорение"
+      ],
+      ans: 1
+    },
+    {
+      q: "Единица измерения мощности в системе СИ:",
+      opts: ["Джоуль (Дж)", "Ньютон (Н)", "Ватт (Вт)", "Герц (Гц)"],
+      ans: 2
+    },
+    {
+      q: "Двигатель совершил работу 6000 Дж за 2 минуты. Его мощность равна:",
+      opts: ["50 Вт", "3000 Вт", "12000 Вт", "100 Вт"],
+      ans: 0
+    },
+    {
+      q: "При каком условии сила совершает положительную работу?",
+      opts: [
+        "Угол между силой и перемещением равен 90°",
+        "Угол между силой и перемещением острый (< 90°)",
+        "Угол между силой и перемещением тупой (> 90°)",
+        "Тело не движется"
+      ],
+      ans: 1
+    },
+    {
+      q: "Сила 50 Н перемещает тело на 4 м под углом 60° к направлению движения. Работа силы равна:",
+      opts: ["200 Дж", "100 Дж", "173 Дж", "0 Дж"],
+      ans: 1
+    },
+    {
+      q: "Какую работу совершает сила нормальной реакции опоры при горизонтальном движении тела?",
+      opts: ["Максимальную", "Минимальную", "Нулевую", "Отрицательную"],
+      ans: 2
+    },
+    {
+      q: "Мощность, потребляемая пылесосом, 1200 Вт. Он работал 30 минут. Какую работу он совершил?",
+      opts: ["36 000 Дж", "2 160 000 Дж", "40 Дж", "600 000 Дж"],
+      ans: 1
+    },
+    {
+      q: "1 лошадиная сила приблизительно равна:",
+      opts: ["100 Вт", "746 Вт", "1000 Вт", "500 Вт"],
+      ans: 1
+    },
+    {
+      q: "Автомобиль движется со скоростью 20 м/с. Сила тяги двигателя 4000 Н. Мощность двигателя:",
+      opts: ["200 Вт", "80 000 Вт", "4020 Вт", "4000 Вт"],
+      ans: 1
+    },
+    {
+      q: "Груз массой 10 кг поднимают с постоянной скоростью на высоту 3 м (g = 10 м/с²). Работа силы тяжести равна:",
+      opts: ["300 Дж", "-300 Дж", "0 Дж", "30 Дж"],
+      ans: 1
+    },
+    {
+      q: "При каком движении тела сила совершает нулевую работу?",
+      opts: [
+        "Прямолинейное равноускоренное",
+        "Свободное падение",
+        "Движение по окружности с постоянной скоростью",
+        "Движение по наклонной плоскости"
+      ],
+      ans: 2
+    },
+    {
+      q: "Формула для расчёта мощности через скорость и силу:",
+      opts: ["P = A / t²", "P = F · v", "P = m · v²", "P = F / v"],
+      ans: 1
+    },
+    {
+      q: "Кран поднял груз массой 500 кг на высоту 10 м за 25 секунд (g = 10 м/с²). Мощность крана равна:",
+      opts: ["2000 Вт", "200 Вт", "50 000 Вт", "25 000 Вт"],
+      ans: 0
+    },
+    {
+      q: "Работа является скалярной или векторной величиной?",
+      opts: ["Векторной", "Скалярной", "Зависит от направления", "Ни той, ни другой"],
+      ans: 1
+    },
+    {
+      q: "Тело движется под действием силы 30 Н. За 5 секунд оно прошло путь 15 м. Мощность равна:",
+      opts: ["90 Вт", "450 Вт", "2,5 Вт", "6 Вт"],
+      ans: 0
+    },
+    {
+      q: "Если удвоить силу и сохранить то же перемещение, работа:",
+      opts: ["Не изменится", "Уменьшится вдвое", "Увеличится вдвое", "Увеличится в 4 раза"],
+      ans: 2
+    },
+    {
+      q: "Что из перечисленного НЕ является единицей работы?",
+      opts: ["Джоуль", "Ньютон·метр", "Килоджоуль", "Ватт"],
+      ans: 3
+    }
+  ],
+  2: [
+    {
+      q: "Работа равна нулю, если:",
+      opts: [
+        "Тело движется равномерно",
+        "Угол между силой и перемещением равен 90°",
+        "Сила направлена вниз",
+        "Тело ускоряется"
+      ],
+      ans: 1
+    },
+    {
+      q: "Единица измерения мощности Ватт эквивалентна:",
+      opts: ["Дж·с", "Дж/с", "Н/м", "кг·м/с"],
+      ans: 1
+    },
+    {
+      q: "Сила 200 Н направлена горизонтально. Тело переместилось на 3 м горизонтально. Работа равна:",
+      opts: ["600 Дж", "0 Дж", "66,7 Дж", "200 Дж"],
+      ans: 0
+    },
+    {
+      q: "Механическая мощность — это:",
+      opts: [
+        "A / s",
+        "F · t",
+        "A / t",
+        "m · v"
+      ],
+      ans: 2
+    },
+    {
+      q: "Насос мощностью 5 кВт работал 2 часа. Совершённая работа:",
+      opts: ["10 000 Дж", "36 000 000 Дж", "1 000 Дж", "2500 Дж"],
+      ans: 1
+    },
+    {
+      q: "Тело массой 5 кг движется под действием силы 20 Н, пройдя путь 10 м. Работа силы:",
+      opts: ["50 Дж", "200 Дж", "1000 Дж", "2 Дж"],
+      ans: 1
+    },
+    {
+      q: "Чему равна средняя мощность, если за 10 с совершена работа 500 Дж?",
+      opts: ["5000 Вт", "0,02 Вт", "50 Вт", "510 Вт"],
+      ans: 2
+    },
+    {
+      q: "Отрицательная работа совершается, когда:",
+      opts: [
+        "Угол между силой и перемещением равен 0°",
+        "Тело движется равномерно",
+        "Угол между силой и перемещением тупой (90°–180°)",
+        "Сила равна нулю"
+      ],
+      ans: 2
+    },
+    {
+      q: "Тело поднимают с постоянной скоростью. Какая сила совершает отрицательную работу?",
+      opts: ["Сила тяги", "Сила трения", "Сила тяжести", "Сила реакции опоры"],
+      ans: 2
+    },
+    {
+      q: "Электрическая лампочка мощностью 100 Вт горит 1 час. Сколько энергии она потребила?",
+      opts: ["100 Дж", "6000 Дж", "360 000 Дж", "100 000 Дж"],
+      ans: 2
+    },
+    {
+      q: "Какова мощность двигателя автомобиля, если он движется со скоростью 72 км/ч при силе тяги 2500 Н?",
+      opts: ["50 000 Вт", "180 000 Вт", "34 722 Вт", "25 000 Вт"],
+      ans: 0
+    },
+    {
+      q: "Сила тяжести совершила работу 980 Дж при падении тела. Масса тела (g = 10 м/с²):",
+      opts: ["98 кг", "9,8 кг", "980 кг", "зависит от высоты"],
+      ans: 3
+    },
+    {
+      q: "Если скорость движения тела удвоится, а сила остаётся прежней, мощность:",
+      opts: ["Не изменится", "Уменьшится вдвое", "Увеличится вдвое", "Увеличится в 4 раза"],
+      ans: 2
+    },
+    {
+      q: "Тело движется по горизонтальной плоскости. Сила нормальной реакции опоры:",
+      opts: [
+        "Совершает положительную работу",
+        "Совершает отрицательную работу",
+        "Не совершает работу",
+        "Совершает максимальную работу"
+      ],
+      ans: 2
+    },
+    {
+      q: "Как изменится работа, если перемещение уменьшится в 3 раза при неизменной силе?",
+      opts: ["Уменьшится в 3 раза", "Увеличится в 3 раза", "Уменьшится в 9 раз", "Не изменится"],
+      ans: 0
+    },
+    {
+      q: "Рабочий поднял ящик массой 20 кг на высоту 2 м за 4 с (g = 10 м/с²). Мощность рабочего:",
+      opts: ["400 Вт", "100 Вт", "1600 Вт", "200 Вт"],
+      ans: 1
+    },
+    {
+      q: "Какую работу совершит сила 15 Н, переместив тело на 6 м в своём направлении?",
+      opts: ["2,5 Дж", "21 Дж", "90 Дж", "9 Дж"],
+      ans: 2
+    },
+    {
+      q: "Полезная мощность двигателя насоса 3 кВт. За сколько секунд он совершит работу 9000 Дж?",
+      opts: ["27 с", "3 с", "0,33 с", "30 с"],
+      ans: 1
+    },
+    {
+      q: "Одна лошадь тянет груз с силой 500 Н. Скорость движения 2 м/с. Мощность лошади:",
+      opts: ["250 Вт", "502 Вт", "1000 Вт", "0,004 Вт"],
+      ans: 2
+    },
+    {
+      q: "Работа при равномерном движении тела по горизонтали силой 40 Н на пути 5 м:",
+      opts: ["8 Дж", "45 Дж", "200 Дж", "0 Дж"],
+      ans: 2
+    }
+  ]
+};
+ 
+let state = {
+  name: '', cls: '', variant: 0,
+  questions: [], answers: [],
+  current: 0, selected: null,
+  startTime: null, elapsed: 0,
+  timerInterval: null, done: false
+};
+ 
+function startTest() {
+  const name = document.getElementById('inp-name').value.trim();
+  const cls = document.getElementById('inp-class').value;
+  const variant = document.getElementById('inp-variant').value;
+  const err = document.getElementById('login-error');
+  if (!name || !cls || !variant) { err.style.display = 'block'; return; }
+  err.style.display = 'none';
+ 
+  state.name = name;
+  state.cls = cls;
+  state.variant = parseInt(variant);
+  state.questions = QUESTIONS[state.variant];
+  state.answers = new Array(state.questions.length).fill(null);
+  state.current = 0;
+  state.selected = null;
+  state.startTime = Date.now();
+  state.done = false;
+ 
+  document.getElementById('screen-login').classList.add('hidden');
+  document.getElementById('screen-test').classList.remove('hidden');
+ 
+  startTimer();
+  renderQuestion();
+}
+ 
+function startTimer() {
+  state.timerInterval = setInterval(() => {
+    if (state.done) return;
+    state.elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+    updateTimerDisplay();
+  }, 1000);
+}
+ 
+function updateTimerDisplay() {
+  const m = Math.floor(state.elapsed / 60).toString().padStart(2, '0');
+  const s = (state.elapsed % 60).toString().padStart(2, '0');
+  const el = document.getElementById('timer-display');
+  el.textContent = '⏱ ' + m + ':' + s;
+  el.className = 'timer' + (state.elapsed > 1200 ? ' warning' : '');
+}
+ 
+function renderQuestion() {
+  const q = state.questions[state.current];
+  const total = state.questions.length;
+  document.getElementById('q-num').textContent = 'Вопрос ' + (state.current + 1);
+  document.getElementById('q-counter').textContent = 'Вопрос ' + (state.current + 1) + ' из ' + total;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('progress-fill').style.width = ((state.current + 1) / total * 100) + '%';
+ 
+  const optsEl = document.getElementById('q-options');
+  optsEl.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'option' + (state.answers[state.current] === i ? ' selected' : '');
+    div.innerHTML = `<div class="option-dot"><div class="option-dot-inner"></div></div><span class="option-label">${opt}</span>`;
+    div.onclick = () => selectOption(i);
+    optsEl.appendChild(div);
+  });
+ 
+  const btnNext = document.getElementById('btn-next');
+  btnNext.disabled = state.answers[state.current] === null;
+  btnNext.textContent = state.current === total - 1 ? 'Завершить тест ✓' : 'Далее →';
+  state.selected = state.answers[state.current];
+}
+ 
+function selectOption(i) {
+  state.answers[state.current] = i;
+  state.selected = i;
+  document.querySelectorAll('.option').forEach((el, idx) => {
+    el.className = 'option' + (idx === i ? ' selected' : '');
+  });
+  document.getElementById('btn-next').disabled = false;
+}
+ 
+function nextQuestion() {
+  if (state.selected === null) return;
+  if (state.current < state.questions.length - 1) {
+    state.current++;
+    state.selected = state.answers[state.current];
+    renderQuestion();
+  } else {
+    finishTest(false);
+  }
+}
+ 
+function finishTest(forced) {
+  if (state.done) return;
+  state.done = true;
+  clearInterval(state.timerInterval);
+  state.elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+ 
+  let correct = 0;
+  state.answers.forEach((ans, i) => {
+    if (ans === state.questions[i].ans) correct++;
+  });
+ 
+  const total = state.questions.length;
+  const percent = Math.round(correct / total * 100);
+ 
+  document.getElementById('screen-test').classList.add('hidden');
+  document.getElementById('screen-result').classList.remove('hidden');
+ 
+  document.getElementById('res-percent').textContent = percent + '%';
+  document.getElementById('res-correct').textContent = correct;
+  document.getElementById('res-wrong').textContent = total - correct;
+  const m = Math.floor(state.elapsed / 60).toString().padStart(2, '0');
+  const s = (state.elapsed % 60).toString().padStart(2, '0');
+  document.getElementById('res-time').textContent = m + ':' + s;
+  document.getElementById('res-name-class').textContent = state.name + ' · ' + state.cls + ' · Вариант ' + state.variant;
+  document.getElementById('res-title').textContent =
+    forced ? 'Тест завершён принудительно' :
+    percent >= 85 ? 'Отличный результат!' :
+    percent >= 60 ? 'Хороший результат!' : 'Нужно повторить материал';
+ 
+  buildReview();
+  sendResults(correct, percent, forced);
+}
+ 
+function buildReview() {
+  const list = document.getElementById('review-list');
+  list.innerHTML = '';
+  state.questions.forEach((q, i) => {
+    const userAns = state.answers[i];
+    const isOk = userAns === q.ans;
+    const div = document.createElement('div');
+    div.className = 'review-item';
+    div.innerHTML = `
+      <div class="review-header">
+        <div class="review-badge ${isOk ? 'ok' : 'err'}">${isOk ? '✓' : '✗'}</div>
+        <div class="review-q">${i + 1}. ${q.q}</div>
+      </div>
+      ${!isOk ? `<div class="review-body">
+        <div class="review-answer"><span class="lbl">Ваш ответ:</span> <span class="val-err">${userAns !== null ? q.opts[userAns] : 'не отвечено'}</span></div>
+        <div class="review-answer"><span class="lbl">Правильный:</span> <span class="val-ok">${q.opts[q.ans]}</span></div>
+      </div>` : ''}
+    `;
+    list.appendChild(div);
+  });
+}
+ 
+async function sendResults(score, percent, forced) {
+  const statusEl = document.getElementById('send-status');
+  const payload = {
+    name: state.name,
+    class: state.cls,
+    variant: String(state.variant),
+    score: score,
+    percent: percent,
+    forced: forced ? 1 : 0,
+    time: state.elapsed
+  };
+  try {
+    await fetch('https://script.google.com/macros/s/AKfycbyVpb_lNKAsLHtl4m3sOFC-_vopmhzzptIt4hVdwsGzsVOCSDE61R80ozutkPfJTw9WCA/exec', {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    statusEl.textContent = '✅ Результаты отправлены учителю';
+    statusEl.style.color = 'var(--green)';
+  } catch (e) {
+    statusEl.textContent = '⚠️ Не удалось отправить результаты — обратитесь к учителю';
+    statusEl.style.color = 'var(--red)';
+  }
+}
+ 
+window.addEventListener('beforeunload', () => {
+  if (!state.done && state.startTime) {
+    finishTest(true);
+    navigator.sendBeacon(
+      'https://script.google.com/macros/s/AKfycbyVpb_lNKAsLHtl4m3sOFC-_vopmhzzptIt4hVdwsGzsVOCSDE61R80ozutkPfJTw9WCA/exec',
+      JSON.stringify({
+        name: state.name, class: state.cls, variant: String(state.variant),
+        score: state.answers.filter((a, i) => a === state.questions[i]?.ans).length,
+        percent: Math.round(state.answers.filter((a, i) => a === state.questions[i]?.ans).length / (state.questions.length || 1) * 100),
+        forced: 1, time: state.elapsed
+      })
+    );
+  }
+});
+</script>
+</body>
+</html>
